@@ -164,6 +164,17 @@ class App extends Component {
           </Grid>
           <hr />
         </Paper>
+        <Grid>
+          <Paper style={{ textAlign: "center" }}>
+            *****{" "}
+            <b>
+              INFO: After a scan/deliver of a package or a RESET, you must
+              resfresh the page or make a search/remain request to refresh the
+              state of the packages
+            </b>{" "}
+            *****
+          </Paper>
+        </Grid>
         <TableContainer component={Paper}>
           <Table aria-label="simple table">
             <TableHead>
