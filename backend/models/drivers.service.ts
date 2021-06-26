@@ -7,7 +7,7 @@ import { Packages } from "./packages.interface";
 import * as PackageServises from "./packages.service";
 
 
-// Memory list
+// Memory list for drivers
 let drivers: Drivers = {
     1: {
         id: 1,
@@ -37,7 +37,6 @@ export const findAll = async (): Promise<Driver[]> => Object.values(drivers);
 export const find = async (id: number): Promise<Driver> => drivers[id];
 
 // Create new driver
-
 export const create = async (newDriver: BaseDriver): Promise<Driver> => {
     const id = drivers[Object.values(drivers).length].id + 1;
 
@@ -49,12 +48,12 @@ export const create = async (newDriver: BaseDriver): Promise<Driver> => {
     return drivers[id];
 }
 
-// Return items of driver id
-
+// Return packages of driver based on the id
 export const driverPackages = async (
     id: number
 ): Promise<Package[] | null> => {
     const driver = await find(id)
+    // Check if driver exists
     if (!driver) {
         return null;
     }
@@ -62,7 +61,7 @@ export const driverPackages = async (
     return pckgs;
 }
 
-
+// Return remaining(unscanned) packages of driver based on the id
 export const driverRemainingPackages = async (
     id: number
 ): Promise<Package[] | null> => {

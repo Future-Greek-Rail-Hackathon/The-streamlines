@@ -8,7 +8,7 @@ import 'mocha';
 chai.use(chaiHttp);
 const expect = chai.expect;
 
-
+//######################## CLUSTER TESTING ########################//
 describe("Drivers API", () => {
     describe("Test get route /api/drivers", () => {
         it("It should return all the packages", () => {

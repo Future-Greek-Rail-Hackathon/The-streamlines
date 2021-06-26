@@ -11,6 +11,7 @@ const PORT = 8000;
 // parse application/json
 app.use(bodyParser.json())
 app.use(cors());
+// Set headers
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', "*");
   res.setHeader(
@@ -21,10 +22,12 @@ app.use((req, res, next) => {
   next();
 });
 
+// Set router base paths
 app.use("/api/packages", packageRouter)
 app.use("/api/drivers", driverRouter)
 app.use("/api/clusters", clusterRouter)
 
+// Init server
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at https://localhost:${PORT}`);
 });
