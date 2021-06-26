@@ -13,7 +13,6 @@ export interface BaseCluster {
     package_ids: number[];
     starting: string;
 }
-
 export interface Cluster extends BaseCluster {
     id: number;
 }

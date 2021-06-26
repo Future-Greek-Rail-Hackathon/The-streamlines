@@ -1,7 +1,7 @@
 import *as PackageServices from '../models/packages.service';
 import *as DriverServices from '../models/drivers.service';
 import app from '../index';
-import  chai from 'chai';
+import chai from 'chai';
 import chaiHttp from 'chai-http'
 import 'mocha';
 
@@ -37,7 +37,7 @@ describe("Package API", () => {
   });
 
   describe("Test post route /api/packages/reset", () => {
-    it("It should reset the state of the in-memory lists and returna all the packages", () => {
+    it("It should reset the state of the in-memory lists and return all the packages", () => {
       chai
         .request(app)
         .get("/api/packages/reset")
@@ -118,6 +118,8 @@ describe("Package API", () => {
 
 
 });
+
+
 //######################## CLUSTER TESTING ##########################//
 describe("Cluster API", () => {
   describe("Test get route /api/clusters", () => {

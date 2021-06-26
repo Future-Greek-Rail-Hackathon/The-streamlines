@@ -125,7 +125,6 @@ export const createPackage = async (newPackage: BasePackage): Promise<Package> =
         id,
         ...newPackage,
     }
-    let scan_id;
     if (newPackage.postcode.toString().substr(0, 2) === "10") {
        Object.values(clusters)[1].package_ids.push(id);
     } else if (newPackage.postcode.toString().substr(0, 2) === "11") {

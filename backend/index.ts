@@ -24,6 +24,7 @@ app.use((req, res, next) => {
 app.use("/api/packages", packageRouter)
 app.use("/api/drivers", driverRouter)
 app.use("/api/clusters", clusterRouter)
+
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at https://localhost:${PORT}`);
 });
