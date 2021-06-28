@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 
 // Connect to database
 pool.connect(function (err, client, done) {
-  if (err) throw new Error(err);
+  if (err) throw new Error(err.message);
   console.log('Connected');
 });
 
