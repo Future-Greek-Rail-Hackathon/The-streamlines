@@ -24,6 +24,8 @@ class App extends Component {
     selectedTab: 0,
     barcode: "",
     driverId: "",
+    voucher: "",
+    postcode: "",
   };
   componentDidMount() {
     if (this.state.loaded === false) {
@@ -66,6 +68,18 @@ class App extends Component {
           packages: res.data,
         });
       });
+  }
+
+  CreatePackage() {
+    let data = {
+      voucher: this.state.voucher,
+      postcode: parseInt(this.state.postcode),
+      scanned: false,
+      delivered: false,
+    };
+    axios.post("http://localhost:8000/api/packages/", data).then((res) => {
+      console.log(res);
+    });
   }
 
   TotalRemain() {
@@ -119,7 +133,22 @@ class App extends Component {
               <Button onClick={() => this.Scan()}>Scan</Button>
               <Button onClick={() => this.Deliver()}>Deliver</Button>
             </Grid>
-            <Grid item xs={4}></Grid>
+            <Grid item xs={4}>
+              <TextField
+                name="voucher"
+                label="Voucher"
+                onChange={this.onChange}
+              />
+              <TextField
+                name="postcode"
+                label="Postcode"
+                onChange={this.onChange}
+              />
+
+              <Button onClick={() => this.CreatePackage()}>
+                Create package
+              </Button>
+            </Grid>
             <Grid item xs={4}>
               INFO: <br /> -Insert barcode (package ID) and press scan to scan
               an item <br /> -Insert barcode (package ID) and press deliver to

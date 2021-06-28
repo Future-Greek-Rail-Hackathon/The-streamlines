@@ -2,6 +2,7 @@ import express from 'express';
 import cors from "cors";
 import { packageRouter,clusterRouter } from "./models/packages.routers"
 import { driverRouter } from './models/driver.routers';
+import pool from './models/dbconfig'
 
 const bodyParser = require('body-parser');
 const app = express();
@@ -21,6 +22,13 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
   next();
 });
+
+// Connect to database
+pool.connect(function (err, client, done) {
+  if (err) throw new Error(err);
+  console.log('Connected');
+});
+
 
 // Set router base paths
 app.use("/api/packages", packageRouter)

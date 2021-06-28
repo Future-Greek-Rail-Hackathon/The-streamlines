@@ -81,6 +81,7 @@ packageRouter.post("/", async (req: Request, res: Response) => {
 
         res.status(201).json(newPackage);
     } catch (e) {
+        console.log(e)
         res.status(500).send(e.message);
     }
 });
@@ -165,9 +166,9 @@ packageRouter.get("/remaining/all", async (req: Request, res: Response) => {
 // Reset all items
 packageRouter.post("/reset", async (req: Request, res: Response) => {
     try {
-        const packages: Package[] = await PackageService.resetAll();
+        await PackageService.resetAll();
 
-        res.status(200).send(packages);
+        res.status(200);
     } catch (e) {
         console.log(e)
         res.status(500).send(e.message);

@@ -3,6 +3,7 @@ import { Driver } from "./driver.interface";
 import * as driverServices from "./drivers.service";
 import { BasePackage, Package, Cluster, BaseCluster } from "./package.interface";
 import { Clusters, Packages } from "./packages.interface";
+import pool from './dbconfig'
 
 // Memory list for packages
 let packages: Packages = {
@@ -78,126 +79,135 @@ let packages: Packages = {
     }
 }
 
-// Memory List of clusters
-let clusters: Clusters = {
-    1: {
-        id: 1,
-        name: "A",
-        starting: "10",
-        package_ids: [0, 2, 7],
-    },
-    2: {
-        id: 2,
-        name: "B",
-        starting: "11",
-        package_ids: [1,3,4],
-    },
-    3: {
-        id: 3,
-        name: "C",
-        starting: "16",
-        package_ids: [5,6,8,9]
-    }
-
-}
-
 // Methods
 
 // Return all packages
-export const findAllPackage = async (): Promise<Package[]> => Object.values(packages);
+export const findAllPackage = async (): Promise<Package[]> => {
+    // Connec to db
+    const client = await pool.connect();
+    // Set query
+    const sql = "select * from packages;"
+    // Execute query
+    const { rows } = await client.query(sql);
+    const packages = rows;
+    client.release();
+
+    return packages;
+
+};
 
 // Return all cluster
-export const findAllClusters = async (): Promise<Cluster[]> => Object.values(clusters);
+export const findAllClusters = async (): Promise<Cluster[]> => {
+    // Connec to db
+    const client = await pool.connect();
+    // Set query
+    const sql = "select * from clusters;"
+    // Execute query
+    const { rows } = await client.query(sql);
+    const clusters = rows;
+    client.release();
+
+    return clusters;
+};
 
 // Return package by id
-export const findPackage = async (id: number): Promise<Package> => packages[id];
+export const findPackage = async (id: number): Promise<Package> => 
+{
+    // Connec to db
+    const client = await pool.connect();
+    // Set query
+    const sql = `select * from packages where ID = ${id};`
+    // Execute query
+    const {rows} = await client.query(sql);
+    const pckg = rows[0];
+    
+    console.log(pckg)
+    client.release();
+    return pckg;
+};
 
 // Return package by id
-export const findCluster = async (id: number): Promise<Cluster> => clusters[id];
+export const findCluster = async (id: number): Promise<Cluster> => 
+{
+     // Connec to db
+    const client = await pool.connect();
+    // Set query
+    const sql = `select * from clusters where ID = ${id};`
+    // Execute query
+    const {rows} = await client.query(sql);
+    const cluster = rows[0];
+    client.release();
+
+    return cluster;
+};
 
 // Create new package 
-export const createPackage = async (newPackage: BasePackage): Promise<Package> => {
-    // Get last id from in-memory package list
-    const id = packages[Object.values(packages).length].id + 1;
+export const createPackage = async (newPackage: BasePackage): Promise<null> => {
 
-    // Create package
-    packages[id] = {
-        id,
-        ...newPackage,
-    }
-    // Append to responsible cluster by looking at the first 2 digits of postcode
-    if (newPackage.postcode.toString().substr(0, 2) === "10") {
-       Object.values(clusters)[1].package_ids.push(id);
-    } else if (newPackage.postcode.toString().substr(0, 2) === "11") {
-         Object.values(clusters)[2].package_ids.push(id);
-    } else if (newPackage.postcode.toString().substr(0, 2) === "16") {
-         Object.values(clusters)[3].package_ids.push(id);
-    }
+    // Connect to db
+    const client = await pool.connect();
 
-    return packages[id];
+    // Insert to packages table
+    const sql = `insert into public.packages(voucher,postcode,scanned,delivered) values ('${newPackage.voucher}',${newPackage.postcode},${newPackage.scanned}, ${newPackage.delivered}) returning ID;`
+    let ans = await client.query(sql)
+    // Get id from last insertion
+    const id = ans.rows[0]
+    
+    // Get first two digits of postcode
+    const digits = newPackage.postcode.toString().substr(0, 2)
+    // Append to cluster
+    const updtSql = `update public.clusters set "Package_ids" = array_append("Package_ids",'${id.id}') where "Starts" LIKE '${digits}%';`
+    ans = await client.query(updtSql);
+    console.log(ans)
+    client.release();
+
+    return null;
 }
+
+
 
 // Create new cluster
-export const createCluster = async (newCluster: BaseCluster): Promise<Package> => {
-    const id = packages[Object.values(clusters).length].id + 1;
+export const createCluster = async (newCluster: BaseCluster): Promise<null> => {
+   // Connect to db
+    const client = await pool.connect();
 
-    clusters[id] = {
-        id,
-        ...newCluster,
-    }
+    // Insert to packages table
+    const sql = `insert into clusters(name,package_ids,starting) values ('${newCluster.name}','{}'.'${newCluster.starting}');`
+    let ans = await client.query(sql)
+    client.release();
 
-    return packages[id];
+    return null;
 }
 
 
-// Get packages based on driver cluster
-export const driver_package = async (driver: Driver): Promise<Package[]> => {
-    let pckgs: Package[] = [];
-    // Get packages from the driver's cluster and append them to a list of type Package
-    for (let index = 0; index < Object.values(clusters)[driver.cluster_id].package_ids.length; index++) {
-        pckgs.push(Object.values(packages)[Object.values(clusters)[driver.cluster_id].package_ids[index]])
-        
-    }
-    return pckgs;
-}
-
-// Get remaining packages based on driver cluster
-export const driver_remaining_package = async (driver: Driver): Promise<Package[]> => {
-    let pckgs: Package[] = [];
-    // Check if the packages of the drive;s class are unscanned and append them to the empty list
-    for (let index = 0; index < Object.values(clusters)[driver.cluster_id].package_ids.length; index++) {
-        let pckg = Object.values(packages)[Object.values(clusters)[driver.cluster_id].package_ids[index]]
-        if (pckg.scanned === false)
-        {
-            pckgs.push(pckg)
-        }
-        
-    }
-    return pckgs;
-}
 
 // Get remaining items
 export const total_remain_package = async (): Promise<Package[]> => {
-    // Get all the unscanned packages
-    let pckgs = Object.values(packages).filter(pckg => pckg.scanned === false)
-    return pckgs
+     // Connec to db
+    const client = await pool.connect();
+    // Set query we need only the unscanned packages
+    const sql = "select * from packages where scanned = false;"
+    // Execute query
+    const { rows } = await client.query(sql);
+    const packages = rows;
+    client.release();
+
+    return packages;
 }
 
 // Scan  item
 export const scan = async (
     id: number
 ): Promise<Package | null> => {
-    const packagee = await findPackage(id)
-    // Check if package exists
-    if (!packagee) {
-        return null;
-    }
+    // Connect to db
+    const client = await pool.connect();
 
-    packagee.scanned = true;
-    // Update the packages in-memory list
-    packages[id] = packagee;
+    // Update package to scanned
+    const updtSql = `update packages set Scanned = 'true'  where id = '${id}';`
+    const ans = await client.query(updtSql);
+    console.log(ans)
+    client.release();
 
-    return packages[id];
     return null;
 }
 
@@ -206,38 +216,42 @@ export const scan = async (
 export const deliver = async (
     id: number
 ): Promise<Package | null> => {
-    const packagee = await findPackage(id)
+    // Connect to db
+    const client = await pool.connect();
 
-    // Check if package exists
-    if (!packagee || packagee.scanned === false) {
-        return null;
-    }
+    // Update package to scanned
+    const updtSql = `update public.packages set delivered = true  where id = '${id}';`
+    const ans = await client.query(updtSql);
+    console.log(ans)
+    client.release();
 
-    packagee.delivered = true;
-
-    // Update the packages in-memory list
-    packages[id] = packagee;
-
-    return packages[id];
+    return null;
 }
 
 // Delete pacakge
 export const remove = async (id: number): Promise<null | void> => {
-    const packagee = await findPackage(id);
+    // Connect to db
+    const client = await pool.connect();
 
-    // Check if package exists
-    if (!packagee) {
-        return null;
-    }
-    // Update the packages in-memory list
-    delete packages[id];
+    // Update package to scanned
+    const delSql = `delete from packages where id = '${id}';`
+    const ans = await client.query(delSql);
+    console.log(ans)
+    client.release();
+
+    return null;
 }
 
 // Reset packages
-export const resetAll = async (): Promise<Package[]> => {
-    // Reset the state of the in-memory package list
-    for (let index = 0; index < Object.values(packages).length; index++) {
-        Object.values(packages)[index].scanned = false;
-    }
-    return Object.values(packages);
+export const resetAll = async (): Promise<null> => {
+   // Connect to db
+    const client = await pool.connect();
+
+    // Update package to scanned
+    const updtSql = `update packages set scanned = false, delivered = false ;`
+    const ans = await client.query(updtSql);
+    console.log(ans)
+    client.release();
+
+    return null;
 }
