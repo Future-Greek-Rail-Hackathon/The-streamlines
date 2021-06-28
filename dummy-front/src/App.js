@@ -169,10 +169,10 @@ class App extends Component {
             </Grid>
             <Grid item xs={4}></Grid>
             <Grid item xs={4}>
-              INFO: <br /> -Insert drivers id and press search to see all
-              drivers packages
-              <br /> -Insert drivers id and press reamain to see all unscanned
-              drivers packages
+              INFO: <br /> -Insert drivers id (index starts from 2) and press
+              search to see all drivers packages
+              <br /> -Insert drivers id (index starts from 2) and press reamain
+              to see all unscanned drivers packages
             </Grid>
           </Grid>
           <hr />
