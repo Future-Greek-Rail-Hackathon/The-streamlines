@@ -5,15 +5,14 @@ import {
   Index,
   CreateDateColumn,
   UpdateDateColumn,
-} from "typeorm";
-import { GeoLocation } from "./Trains";
+} from 'typeorm';
 
 export enum TrainStopType {
-  TERMINAL = "terminal",
-  TRANSIT = "transit",
+  TERMINAL = 'terminal',
+  TRANSIT = 'transit',
 }
 
-@Entity({ name: "train_stops" })
+@Entity({ name: 'train_stops' })
 export class TrainStop {
   @PrimaryGeneratedColumn()
   id?: number;
@@ -22,9 +21,11 @@ export class TrainStop {
   @Column({ enum: TrainStopType, nullable: true })
   type: TrainStopType;
 
-  @Index()
-  @Column({ nullable: true })
-  location: GeoLocation;
+  @Column('numeric', { precision: 9, scale: 6, nullable: true })
+  latitude?: number;
+
+  @Column('numeric', { precision: 9, scale: 6, nullable: true })
+  longitude?: number;
 
   @Column({ nullable: true })
   canLoad: boolean;
@@ -32,9 +33,9 @@ export class TrainStop {
   @Column({ nullable: true })
   canUnLoad: boolean;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 }

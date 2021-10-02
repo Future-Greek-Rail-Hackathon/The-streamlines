@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha -r ts-node/register test/**/*.test.ts",
-    "dev": " NODE_ENV=development ts-node  src/index.ts"
+    "dev": "nodemon --exec NODE_ENV=development ts-node  src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -14,13 +14,18 @@
     "@types/chai-http": "^4.2.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/dotenv-safe": "^8.1.2",
+    "@types/lodash": "^4.14.175",
     "body-parser": "^1.19.0",
     "chai": "^4.3.4",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv-safe": "^8.2.0",
     "express": "^4.17.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
     "node-notifier": "^10.0.0",
+    "nodemon": "^2.0.13",
     "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.37"
@@ -35,5 +40,12 @@
     "mocha": "^9.0.1",
     "ts-node-dev": "^1.1.6",
     "typescript": "^4.3.4"
+  },
+  "nodemonConfig": {
+    "restartable": false,
+    "ignore": [
+      "logs/",
+      "coverage/"
+    ]
   }
 }
