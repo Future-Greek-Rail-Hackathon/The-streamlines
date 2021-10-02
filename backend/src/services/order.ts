@@ -5,6 +5,7 @@ import { Package } from '../entity/Package';
 import { Train, TrainType } from '../entity/Trains';
 import { RouteService } from './route';
 import { TrainService } from './train';
+import { UserService } from './user';
 moment.tz.setDefault('Europe/Athens');
 
 export class OrderService {
@@ -20,8 +21,8 @@ export class OrderService {
     trainId: number,
     pickupDate: Date,
   ): Promise<Order> {
-    // const userModel = new UserService();
-    // const user = userModel.findById(userId);
+    const userModel = new UserService();
+    const user = await userModel.findById(userId);
 
     const trainModel = new TrainService();
     const assignedTrain = await trainModel.findById(trainId);
