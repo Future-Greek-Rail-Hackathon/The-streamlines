@@ -1,9 +1,9 @@
-import *as PackageServices from '../models/packages.service';
-import *as DriverServices from '../models/drivers.service';
-import app from '../index';
-import chai from 'chai';
-import chaiHttp from 'chai-http'
-import 'mocha';
+import * as PackageServices from "../src/models/packages.service";
+import * as DriverServices from "../src/models/drivers.service";
+import app from "../src/index";
+import chai from "chai";
+import chaiHttp from "chai-http";
+import "mocha";
 
 chai.use(chaiHttp);
 const expect = chai.expect;
@@ -16,11 +16,11 @@ describe("Package API", () => {
       chai
         .request(app)
         .get("/api/packages")
-        .then(res => {
-          chai.expect(res.status).equal(200)
-          chai.expect(res.body).to.be("array")
-          chai.expect(res.body).length.to.not.be.eq(0)
-        })
+        .then((res) => {
+          chai.expect(res.status).equal(200);
+          chai.expect(res.body).to.be("array");
+          chai.expect(res.body).length.to.not.be.eq(0);
+        });
     });
   });
 
@@ -29,10 +29,10 @@ describe("Package API", () => {
       chai
         .request(app)
         .get("/api/packages/remaining/all")
-        .then(res => {
-          chai.expect(res.status).equal(200)
-          chai.expect(res.body).to.be("array")
-        })
+        .then((res) => {
+          chai.expect(res.status).equal(200);
+          chai.expect(res.body).to.be("array");
+        });
     });
   });
 
@@ -41,11 +41,11 @@ describe("Package API", () => {
       chai
         .request(app)
         .get("/api/packages/reset")
-        .then(res => {
-          chai.expect(res.status).equal(200)
-          chai.expect(res.body).to.be("array")
-          chai.expect(res.body).length.to.be.eq(10)
-        })
+        .then((res) => {
+          chai.expect(res.status).equal(200);
+          chai.expect(res.body).to.be("array");
+          chai.expect(res.body).length.to.be.eq(10);
+        });
     });
   });
 
@@ -54,10 +54,10 @@ describe("Package API", () => {
       chai
         .request(app)
         .get("/api/packages/1")
-        .then(res => {
-          chai.expect(res.status).equal(200)
-          chai.expect(res.body.data).to.be("object")
-        })
+        .then((res) => {
+          chai.expect(res.status).equal(200);
+          chai.expect(res.body.data).to.be("object");
+        });
     });
   });
 
@@ -72,10 +72,10 @@ describe("Package API", () => {
           scanned: false,
           deliverd: false,
         })
-        .then(res => {
-          chai.expect(res.status).equal(200)
-          chai.expect(res.body.data).to.be("object")
-        })
+        .then((res) => {
+          chai.expect(res.status).equal(200);
+          chai.expect(res.body.data).to.be("object");
+        });
     });
   });
 
@@ -84,11 +84,11 @@ describe("Package API", () => {
       chai
         .request(app)
         .put("/api/packages/scan/1")
-        .then(res => {
-          chai.expect(res.status).equal(200)
-          chai.expect(res.body.data).to.be("object")
-          chai.expect(res.body.data.scanned).to.be.equal(true)
-        })
+        .then((res) => {
+          chai.expect(res.status).equal(200);
+          chai.expect(res.body.data).to.be("object");
+          chai.expect(res.body.data.scanned).to.be.equal(true);
+        });
     });
   });
 
@@ -97,11 +97,11 @@ describe("Package API", () => {
       chai
         .request(app)
         .put("/api/packages/scan/1")
-        .then(res => {
-          chai.expect(res.status).equal(200)
-          chai.expect(res.body.data).to.be("object")
-          chai.expect(res.body.data.delivered).to.be.equal(true)
-        })
+        .then((res) => {
+          chai.expect(res.status).equal(200);
+          chai.expect(res.body.data).to.be("object");
+          chai.expect(res.body.data.delivered).to.be.equal(true);
+        });
     });
   });
 
@@ -110,15 +110,12 @@ describe("Package API", () => {
       chai
         .request(app)
         .delete("/api/packages/1")
-        .then(res => {
-          chai.expect(res.status).equal(200)
-        })
+        .then((res) => {
+          chai.expect(res.status).equal(200);
+        });
     });
   });
-
-
 });
-
 
 //######################## CLUSTER TESTING ##########################//
 describe("Cluster API", () => {
@@ -127,11 +124,11 @@ describe("Cluster API", () => {
       chai
         .request(app)
         .get("/api/clusters")
-        .then(res => {
-          chai.expect(res.status).equal(200)
-          chai.expect(res.body).to.be("array")
-          chai.expect(res.body).length.to.not.be.eq(0)
-        })
+        .then((res) => {
+          chai.expect(res.status).equal(200);
+          chai.expect(res.body).to.be("array");
+          chai.expect(res.body).length.to.not.be.eq(0);
+        });
     });
   });
 
@@ -140,10 +137,10 @@ describe("Cluster API", () => {
       chai
         .request(app)
         .get("/api/clusters/1")
-        .then(res => {
-          chai.expect(res.status).equal(200)
-          chai.expect(res.body).to.be("object")
-        })
+        .then((res) => {
+          chai.expect(res.status).equal(200);
+          chai.expect(res.body).to.be("object");
+        });
     });
   });
 
@@ -157,13 +154,10 @@ describe("Cluster API", () => {
           packages_ids: [],
           starting: "20",
         })
-        .then(res => {
-          chai.expect(res.status).equal(200)
-          chai.expect(res.body.data).to.be("object")
-        })
+        .then((res) => {
+          chai.expect(res.status).equal(200);
+          chai.expect(res.body.data).to.be("object");
+        });
     });
   });
-
-
-
 });

@@ -1,2 +1,4 @@
+.env
 /backend/node_modules
-/dummy-front/node_modules
+/backend/src/database/migration/
+.git
