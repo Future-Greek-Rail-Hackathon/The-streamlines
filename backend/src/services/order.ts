@@ -3,6 +3,7 @@ import { getRepository, Repository } from 'typeorm';
 import { Order } from '../entity/Order';
 import { Package } from '../entity/Package';
 import { Train, TrainType } from '../entity/Trains';
+import { PackageService } from './pacakge';
 import { RouteService } from './route';
 import { TrainService } from './train';
 import { UserService } from './user';
@@ -33,8 +34,14 @@ export class OrderService {
     newOrder.requestedPickupDate = pickupDate;
     newOrder.eta = assignedTrain.currenRoute.endTime;
 
+    let packageModel = new PackageService();
     let totalPrice = 0;
-    packages.forEach((p) => (totalPrice = totalPrice + p.price));
+    for (let i = 0, l = packages.length; i < l; i++) {
+      let newp = await packageModel.createPackage(packages[i], newOrder);
+      if (newp) {
+        totalPrice = totalPrice + newp.price;
+      }
+    }
     newOrder.totalPrice = totalPrice;
 
     return await this.orderRepository.save(newOrder);
