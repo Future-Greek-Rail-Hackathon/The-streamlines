@@ -6,14 +6,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-} from "typeorm";
-import { Route } from "./Routes";
-import { TrainStop } from "./TrainStop";
-import { Wagon } from "./Wagon";
+} from 'typeorm';
+import { Route } from './Routes';
+import { TrainStop } from './TrainStop';
+import { Wagon } from './Wagon';
 
 export enum TrainType {
-  FULL_TRAIN = "full_train",
-  NON_FULL_TRAIN = "non_full_train",
+  FULL_TRAIN = 'full_train',
+  NON_FULL_TRAIN = 'non_full_train',
 }
 
 export type GeoLocation = {
@@ -21,7 +21,7 @@ export type GeoLocation = {
   longitude: number;
 };
 
-@Entity({ name: "trains" })
+@Entity({ name: 'trains' })
 export class Train {
   @PrimaryGeneratedColumn()
   id?: number;
@@ -36,8 +36,11 @@ export class Train {
   @Column({ default: false, nullable: true })
   canGoAboard: boolean;
 
-  @Column({ nullable: true })
-  currentLocation: GeoLocation;
+  @Column('numeric', { precision: 9, scale: 6, nullable: true })
+  latitude?: number;
+
+  @Column('numeric', { precision: 9, scale: 6, nullable: true })
+  longitude?: number;
 
   @Column({ nullable: true })
   destination: TrainStop;
@@ -48,9 +51,6 @@ export class Train {
   @Column({ default: false, nullable: true })
   isFull: boolean;
 
-  @Column({ type: "timestamp", nullable: true })
-  eta?: Date;
-
   @OneToMany((type) => Wagon, (wagon) => wagon.train, {
     eager: true,
     cascade: true,
@@ -60,9 +60,9 @@ export class Train {
   @Column((type) => Route)
   currenRoute: Route;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 }

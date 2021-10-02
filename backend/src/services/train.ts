@@ -20,6 +20,11 @@ export class TrainService {
   }
 
   findById(trainId: number) {
-    return this.trainRepository.find({ id: trainId });
+    return this.trainRepository.findOne({
+      where: {
+        id: trainId,
+      },
+      relations: ['Routes'],
+    });
   }
 }

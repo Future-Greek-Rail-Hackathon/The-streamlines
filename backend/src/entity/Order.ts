@@ -6,11 +6,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-} from "typeorm";
-import { TrainStop } from "./TrainStop";
-import { User } from "./User";
+  OneToMany,
+} from 'typeorm';
+import { Package } from './Package';
+import { Train } from './Trains';
+import { TrainStop } from './TrainStop';
+import { User } from './User';
 
-@Entity({ name: "orders" })
+@Entity({ name: 'orders' })
 export class Order {
   @PrimaryGeneratedColumn()
   id?: number;
@@ -18,28 +21,43 @@ export class Order {
   @Index()
   @ManyToOne((type) => User, (user) => user.orders, {
     nullable: false,
-    onDelete: "CASCADE",
+    onDelete: 'CASCADE',
   })
   user?: User;
 
-  @Column({ nullable: true, type: "timestamp" })
+  @OneToMany((type) => Package, (pckg) => pckg.order, {
+    eager: true,
+    cascade: true,
+  })
+  packages: Package[];
+
+  @Column({ nullable: true, type: 'timestamp' })
+  requestedPickupDate: Date;
+
+  @Column({ nullable: true, type: 'timestamp' })
   pickupDate: Date;
 
-  @Column({ nullable: true, type: "timestamp" })
+  @Column({ nullable: true, type: 'timestamp' })
   deliveryDate: Date;
 
   @Column({ nullable: true })
-  pickedupAtLocation: TrainStop;
+  pickedUpLocation: TrainStop;
 
   @Column({ nullable: true })
   deliveredAtLocation: TrainStop;
 
-  @Column({ type: "number", precision: 2, nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
+  eta?: Date;
+
+  @Column({ nullable: true })
+  assignToTrain: Train;
+
+  @Column({ type: 'number', precision: 2, nullable: true })
   totalPrice: number;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 }
