@@ -27,6 +27,6 @@ export class TrainStopService {
   }
 
   findById(trainStopId: number) {
-    return this.trainStopRepository.find({ id: trainStopId });
+    return this.trainStopRepository.findOne({ id: trainStopId });
   }
 }
