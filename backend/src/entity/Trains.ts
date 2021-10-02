@@ -51,7 +51,7 @@ export class Train {
   @Column({ default: false, nullable: true })
   isFull: boolean;
 
-  @OneToMany((type) => Wagon, (wagon) => wagon.train, {
+  @OneToMany((type) => Wagon, (wagon) => wagon.currentTrain, {
     eager: true,
     cascade: true,
   })

@@ -6,15 +6,15 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-} from "typeorm";
-import { Train } from "./Trains";
+} from 'typeorm';
+import { Train } from './Trains';
 
 export enum WagonType {
-  SINGLE_WAGON = "single_wagon",
-  CONTAINER = "container",
+  SINGLE_WAGON = 'single_wagon',
+  CONTAINER = 'container',
 }
 
-@Entity({ name: "wagons" })
+@Entity({ name: 'wagons' })
 export class Wagon {
   @PrimaryGeneratedColumn()
   id?: number;
@@ -41,13 +41,13 @@ export class Wagon {
   @Index()
   @ManyToOne((type) => Train, (train) => train.wagons, {
     nullable: false,
-    onDelete: "CASCADE",
+    onDelete: 'CASCADE',
   })
-  train?: Train;
+  currentTrain?: Train;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 }

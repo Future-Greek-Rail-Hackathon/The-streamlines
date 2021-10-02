@@ -24,7 +24,7 @@ export class TrainService {
       where: {
         id: trainId,
       },
-      relations: ['Routes'],
+      relations: ['routes'],
     });
   }
 }
