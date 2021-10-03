@@ -5,7 +5,9 @@ import {
   Index,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
+import { Train } from './Trains';
 import { TrainStop } from './TrainStop';
 
 @Entity({ name: 'routes' })
@@ -15,11 +17,11 @@ export class Route {
 
   @Index()
   @Column({ nullable: true })
-  startLocation: TrainStop;
+  startLocationId: number;
 
   @Index()
   @Column({ nullable: true })
-  endLocation: TrainStop;
+  endLocationId: number;
 
   @Column({ nullable: true, type: 'timestamp' })
   estimatedTime: Date;
@@ -29,6 +31,12 @@ export class Route {
 
   @Column({ nullable: true, type: 'timestamp' })
   endTime: Date;
+
+  @OneToOne((type) => Train, (train) => train.currenRoute, {
+    eager: true,
+    cascade: true,
+  })
+  currentTrain: Train;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

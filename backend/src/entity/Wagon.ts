@@ -23,19 +23,19 @@ export class Wagon {
   @Column({ enum: WagonType, nullable: true })
   type: WagonType;
 
-  @Column({ precision: 2, nullable: true })
+  @Column('numeric', { precision: 2, nullable: true })
   maxWeight: number;
 
-  @Column({ precision: 2, nullable: true })
+  @Column('numeric', { precision: 2, nullable: true })
   maxVolume: number;
 
-  @Column({ precision: 2, nullable: true })
+  @Column('numeric', { precision: 2, nullable: true })
   minWeightPerPackage: number;
 
-  @Column({ precision: 2, nullable: true })
+  @Column('numeric', { precision: 2, nullable: true })
   currentWeight: number;
 
-  @Column({ precision: 2, nullable: true })
+  @Column('numeric', { precision: 2, nullable: true })
   currentVolume: number;
 
   @Index()

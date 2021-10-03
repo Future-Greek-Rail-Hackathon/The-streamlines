@@ -30,7 +30,7 @@ export class OrderService {
 
     let newOrder = this.orderRepository.create();
     newOrder.user = user;
-    newOrder.assignToTrain = assignedTrain;
+    newOrder.assignedToTrain = assignedTrain;
     newOrder.requestedPickupDate = pickupDate;
     newOrder.eta = assignedTrain.currenRoute.endTime;
 

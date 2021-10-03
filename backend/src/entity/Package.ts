@@ -27,13 +27,13 @@ export class Package {
   @Column({ enum: PackageType, nullable: true })
   type: PackageType;
 
-  @Column({ type: 'number', precision: 2, nullable: true })
+  @Column('numeric', { precision: 2, nullable: true })
   volume: number;
 
-  @Column({ type: 'number', precision: 2, nullable: true })
+  @Column('numeric', { precision: 2, nullable: true })
   weight: number;
 
-  @Column({ type: 'number', precision: 2, nullable: true })
+  @Column('numeric', { precision: 2, nullable: true })
   price: number;
 
   @CreateDateColumn({ type: 'timestamp' })

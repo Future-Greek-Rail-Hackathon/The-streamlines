@@ -41,18 +41,22 @@ export class Order {
   deliveryDate: Date;
 
   @Column({ nullable: true })
-  pickedUpLocation: TrainStop;
+  pickedUpLocation?: number;
 
   @Column({ nullable: true })
-  deliveredAtLocation: TrainStop;
+  deliveredAtLocation?: number;
 
   @Column({ type: 'timestamp', nullable: true })
   eta?: Date;
 
-  @Column({ nullable: true })
-  assignToTrain: Train;
+  @Index()
+  @ManyToOne((type) => Train, (train) => train.currentOrders, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  assignedToTrain?: Train;
 
-  @Column({ type: 'number', precision: 2, nullable: true })
+  @Column('numeric', { precision: 2, nullable: true })
   totalPrice: number;
 
   @CreateDateColumn({ type: 'timestamp' })

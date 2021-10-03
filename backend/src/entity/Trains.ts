@@ -6,7 +6,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
+import { Order } from './Order';
 import { Route } from './Routes';
 import { TrainStop } from './TrainStop';
 import { Wagon } from './Wagon';
@@ -30,7 +32,7 @@ export class Train {
   @Column({ enum: TrainType, nullable: true })
   type: TrainType;
 
-  @Column({ precision: 2, nullable: true })
+  @Column('numeric', { nullable: true })
   maxWeight: number;
 
   @Column({ default: false, nullable: true })
@@ -42,12 +44,6 @@ export class Train {
   @Column('numeric', { precision: 9, scale: 6, nullable: true })
   longitude?: number;
 
-  @Column({ nullable: true })
-  destination: TrainStop;
-
-  @Column({ nullable: true })
-  start: TrainStop;
-
   @Column({ default: false, nullable: true })
   isFull: boolean;
 
@@ -57,8 +53,18 @@ export class Train {
   })
   wagons: Wagon[];
 
-  @Column((type) => Route)
+  @Index()
+  @OneToOne((type) => Route, (route) => route.currentTrain, {
+    eager: true,
+    cascade: true,
+  })
   currenRoute: Route;
+
+  @OneToMany((type) => Order, (order) => order.assignedToTrain, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  currentOrders?: Order[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

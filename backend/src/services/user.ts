@@ -12,8 +12,16 @@ export class UserService {
   }
 
   async createUser(user: User): Promise<User> {
-    let newUser = this.userRepository.create(user);
-    return await this.userRepository.save(newUser);
+    return await this.userRepository.save(user);
+  }
+
+  findByEmail(email: string) {
+    return this.userRepository.findOne({
+      where: {
+        email: email,
+      },
+      relations: ['orders'],
+    });
   }
 
   findById(userId: number) {
