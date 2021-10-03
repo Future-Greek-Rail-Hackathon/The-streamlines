@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import catchErrors from '../lib/catchErrors';
 import { UserService } from '../services/user';
+const CryptoJS = require('crypto-js');
 
 const userHandler: Router = Router();
 
@@ -23,7 +24,7 @@ userHandler
 
 userHandler
   .route('/login') // post /api/user/login
-  .get(
+  .post(
     catchErrors(async (req: Request, res: Response, next: NextFunction) => {
       const email = req.body['email'];
       const password = req.body['password'];
@@ -31,7 +32,7 @@ userHandler
       const userModel = new UserService();
       const user = await userModel.findByEmail(email);
       if (user) {
-        if (user.password !== password) {
+        if (user.password !== CryptoJS.SHA256(password).toString()) {
           res.end('Wrong password');
         }
       } else {
