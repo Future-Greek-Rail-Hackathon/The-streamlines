@@ -15,11 +15,9 @@ export class Route {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Index()
   @Column({ nullable: true })
   startLocationId: number;
 
-  @Index()
   @Column({ nullable: true })
   endLocationId: number;
 

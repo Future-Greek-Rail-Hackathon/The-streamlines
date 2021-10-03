@@ -11,11 +11,15 @@ export class TrainStopService {
     this.trainStopRepository = getRepository(TrainStop);
   }
 
-  async createTrainStop(type: TrainStopType, location: GeoLocation): Promise<TrainStop> {
+  async createTrainStop(
+    type: TrainStopType,
+    latitude: number,
+    longitude: number,
+  ): Promise<TrainStop> {
     let newStop = this.trainStopRepository.create();
     newStop.type = type;
-    newStop.latitude = location.latitude;
-    newStop.longitude = location.longitude;
+    newStop.latitude = latitude;
+    newStop.longitude = longitude;
 
     if (type === TrainStopType.TERMINAL) {
       newStop.canLoad = true;
