@@ -1,4 +1,4 @@
 .env
 /backend/node_modules
-/backend/src/database/migration/
+/backend/src/database/seed
 .git
