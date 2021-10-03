@@ -53,10 +53,8 @@ export class Train {
   })
   wagons: Wagon[];
 
-  @Index()
   @OneToOne((type) => Route, (route) => route.currentTrain, {
     eager: true,
-    cascade: true,
   })
   currenRoute: Route;
 

@@ -32,10 +32,7 @@ export class Route {
   @Column({ nullable: true, type: 'timestamp' })
   endTime: Date;
 
-  @OneToOne((type) => Train, (train) => train.currenRoute, {
-    eager: true,
-    cascade: true,
-  })
+  @OneToOne((type) => Train, (train) => train.currenRoute, {})
   currentTrain: Train;
 
   @CreateDateColumn({ type: 'timestamp' })
