@@ -5,13 +5,17 @@ import {
   Index,
   CreateDateColumn,
   UpdateDateColumn,
+  Unique,
+  OneToMany,
 } from 'typeorm';
+import { Route } from './Routes';
 
 export enum TrainStopType {
   TERMINAL = 'terminal',
   TRANSIT = 'transit',
 }
 
+@Unique('name', ['name'])
 @Entity({ name: 'train_stops' })
 export class TrainStop {
   @PrimaryGeneratedColumn()
@@ -38,6 +42,18 @@ export class TrainStop {
 
   @Column({ nullable: true })
   canUnLoad: boolean;
+
+  @OneToMany((type) => Route, (route) => route.startLocation, {
+    eager: true,
+    cascade: true,
+  })
+  startHereRoutes: Route[];
+
+  @OneToMany((type) => Route, (route) => route.endLocation, {
+    eager: true,
+    cascade: true,
+  })
+  endHereRoutes: Route[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

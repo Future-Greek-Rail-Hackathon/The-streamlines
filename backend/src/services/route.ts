@@ -24,8 +24,8 @@ export class RouteService {
     const end = await trainStopModel.findById(endLocationId);
     let newRoute = this.routeRepository.create();
 
-    newRoute.startLocationId = start.id;
-    newRoute.endLocationId = end.id;
+    newRoute.startLocation = start;
+    newRoute.endLocation = end;
     newRoute.estimatedTime = moment(estimatedTime).toDate();
     newRoute.startTime = moment(startTime).toDate();
     newRoute.endTime = moment(startTime).add(moment(estimatedTime).hours()).toDate();
