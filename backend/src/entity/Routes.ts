@@ -6,6 +6,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
+  ManyToMany,
+  OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { Train } from './Trains';
 import { TrainStop } from './TrainStop';
@@ -15,11 +18,11 @@ export class Route {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Column({ nullable: true })
-  startLocationId: number;
+  @ManyToOne((type) => TrainStop, (trainStop) => trainStop.startHereRoutes)
+  startLocation: TrainStop;
 
-  @Column({ nullable: true })
-  endLocationId: number;
+  @ManyToOne((type) => TrainStop, (trainStop) => trainStop.endHereRoutes)
+  endLocation: TrainStop;
 
   @Column({ nullable: true, type: 'timestamp' })
   estimatedTime: Date;
@@ -32,6 +35,9 @@ export class Route {
 
   @OneToOne((type) => Train, (train) => train.currenRoute, {})
   currentTrain: Train;
+
+  @Column({ default: false, nullable: true })
+  active: boolean;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
