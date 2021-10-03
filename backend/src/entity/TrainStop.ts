@@ -21,6 +21,12 @@ export class TrainStop {
   @Column({ enum: TrainStopType, nullable: true })
   type: TrainStopType;
 
+  @Column({ length: 1024, nullable: true })
+  plusCode?: string;
+
+  @Column({ length: 1024, nullable: true })
+  name?: string;
+
   @Column('numeric', { precision: 9, scale: 6, nullable: true })
   latitude?: number;
 

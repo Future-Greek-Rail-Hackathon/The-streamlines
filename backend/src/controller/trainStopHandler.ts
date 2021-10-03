@@ -10,13 +10,21 @@ trainStopHandler
   .post(
     catchErrors(async (req: Request, res: Response, next: NextFunction) => {
       const type = req.body['type'];
+      const name = req.body['name'];
       const latitude = req.body['latitude'];
       const longitude = req.body['logitude'];
+      const plusCode = req.body['plusCode'];
 
       let newType = type === 'terminal' ? TrainStopType.TERMINAL : TrainStopType.TRANSIT;
 
       const trainStopModel = new TrainStopService();
-      const newTrainStop = await trainStopModel.createTrainStop(newType, latitude, longitude);
+      const newTrainStop = await trainStopModel.createTrainStop(
+        newType,
+        name,
+        latitude,
+        longitude,
+        plusCode,
+      );
       res.json(newTrainStop);
     }),
   );

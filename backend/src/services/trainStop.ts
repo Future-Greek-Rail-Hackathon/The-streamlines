@@ -13,13 +13,20 @@ export class TrainStopService {
 
   async createTrainStop(
     type: TrainStopType,
+    name: string,
     latitude: number,
     longitude: number,
+    plusCode: string,
   ): Promise<TrainStop> {
     let newStop = this.trainStopRepository.create();
     newStop.type = type;
-    newStop.latitude = latitude;
-    newStop.longitude = longitude;
+    newStop.name = name;
+    if (plusCode) {
+      newStop.plusCode = plusCode;
+    } else {
+      newStop.latitude = latitude;
+      newStop.longitude = longitude;
+    }
 
     if (type === TrainStopType.TERMINAL) {
       newStop.canLoad = true;
