@@ -10,8 +10,16 @@ import {
 } from 'typeorm';
 import { Package } from './Package';
 import { Train } from './Trains';
-import { TrainStop } from './TrainStop';
+
 import { User } from './User';
+
+export enum OrderState {
+  NEW_ORDER = 'new_order',
+  ACCEPTED = 'accepted',
+  IN_TRANSIT = 'in_transit',
+  ARRIVED = 'arrived',
+  FINISHED = 'finished',
+}
 
 @Entity({ name: 'orders' })
 export class Order {
@@ -31,6 +39,10 @@ export class Order {
   })
   packages: Package[];
 
+  @Index()
+  @Column({ enum: OrderState, nullable: true })
+  state: OrderState;
+
   @Column({ nullable: true, type: 'timestamp' })
   requestedPickupDate: Date;
 
@@ -41,10 +53,10 @@ export class Order {
   deliveryDate: Date;
 
   @Column({ nullable: true })
-  pickedUpLocation?: number;
+  pickedLocation?: number;
 
   @Column({ nullable: true })
-  deliveredAtLocation?: number;
+  deliverLocation?: number;
 
   @Column({ type: 'timestamp', nullable: true })
   eta?: Date;
