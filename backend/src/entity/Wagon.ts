@@ -23,24 +23,24 @@ export class Wagon {
   @Column({ enum: WagonType, nullable: true })
   type: WagonType;
 
-  @Column('numeric', { precision: 2, nullable: true })
+  @Column('numeric', { nullable: true })
   maxWeight: number;
 
-  @Column('numeric', { precision: 2, nullable: true })
+  @Column('numeric', { nullable: true })
   maxVolume: number;
 
-  @Column('numeric', { precision: 2, nullable: true })
+  @Column('numeric', { nullable: true })
   minWeightPerPackage: number;
 
-  @Column('numeric', { precision: 2, nullable: true })
+  @Column('numeric', { nullable: true })
   currentWeight: number;
 
-  @Column('numeric', { precision: 2, nullable: true })
+  @Column('numeric', { nullable: true })
   currentVolume: number;
 
   @Index()
   @ManyToOne((type) => Train, (train) => train.wagons, {
-    nullable: false,
+    nullable: true,
     onDelete: 'CASCADE',
   })
   currentTrain?: Train;
