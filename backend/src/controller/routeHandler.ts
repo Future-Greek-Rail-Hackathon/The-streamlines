@@ -25,4 +25,16 @@ routeHandler
     }),
   );
 
+routeHandler
+  .route('/') // get /api/routes/
+  .get(
+    catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      // Body params
+      const routeModel = new RouteService();
+      const routes = await routeModel.findAll();
+
+      res.json(routes);
+    }),
+  );
+
 export default routeHandler;

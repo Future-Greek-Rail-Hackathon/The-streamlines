@@ -13,6 +13,12 @@ export class RouteService {
     this.routeRepository = getRepository(Route);
   }
 
+  async findAll(): Promise<Route[]> {
+    return await this.routeRepository.find({
+      relations: ['train_stops'],
+    });
+  }
+
   async createRoute(
     startLocationId: number,
     endLocationId: number,
@@ -28,7 +34,7 @@ export class RouteService {
     newRoute.endLocation = end;
     newRoute.estimatedTime = moment(estimatedTime).toDate();
     newRoute.startTime = moment(startTime).toDate();
-    newRoute.endTime = moment(startTime).add(moment(estimatedTime).hours()).toDate();
+    newRoute.endTime = moment(startTime).add(moment(estimatedTime).hours(), 'hour').toDate();
     return await this.routeRepository.save(newRoute);
   }
 
