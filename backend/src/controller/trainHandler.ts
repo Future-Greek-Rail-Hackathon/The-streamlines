@@ -5,7 +5,7 @@ import { TrainService } from '../services/train';
 const trainHandler: Router = Router();
 
 trainHandler
-  .route('/') // post /api/train/
+  .route('/') // post /api/trains/
   .post(
     catchErrors(async (req: Request, res: Response, next: NextFunction) => {
       const type = req.body['type'];
@@ -18,6 +18,27 @@ trainHandler
       const trainModel = new TrainService();
       const newTrain = await trainModel.createTrain(newType, canGoAboard, maxWeight);
       res.json(newTrain);
+    }),
+  );
+
+trainHandler
+  .route('/:id') // get /api/trains/:id
+  .get(
+    catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      const id = parseInt(req.params.id);
+      const trainModel = new TrainService();
+      const train = await trainModel.findById(id);
+      res.json(train);
+    }),
+  );
+
+trainHandler
+  .route('/') // get /api/trains/
+  .get(
+    catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      const trainModel = new TrainService();
+      const trains = await trainModel.findAll();
+      res.json(trains);
     }),
   );
 

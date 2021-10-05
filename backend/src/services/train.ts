@@ -19,12 +19,16 @@ export class TrainService {
     return await this.trainRepository.save(newTrain);
   }
 
-  findById(trainId: number) {
-    return this.trainRepository.findOne({
+  async findById(trainId: number): Promise<Train> {
+    return await this.trainRepository.findOne({
       where: {
         id: trainId,
       },
-      relations: ['routes'],
+      relations: ['wagons'],
     });
+  }
+
+  async findAll(): Promise<Train[]> {
+    return await this.trainRepository.find({ relations: ['wagons'] });
   }
 }
