@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { Order } from './Order';
 import { Route } from './Routes';
-import { TrainStop } from './TrainStop';
 import { Wagon } from './Wagon';
 
 export enum TrainType {
@@ -48,13 +47,13 @@ export class Train {
   isFull: boolean;
 
   @OneToMany((type) => Wagon, (wagon) => wagon.currentTrain, {
-    eager: true,
+    eager: false,
     cascade: true,
   })
   wagons: Wagon[];
 
   @OneToOne((type) => Route, (route) => route.currentTrain, {
-    eager: true,
+    eager: false,
   })
   currenRoute: Route;
 
