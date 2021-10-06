@@ -37,4 +37,21 @@ routeHandler
     }),
   );
 
+routeHandler
+  .route('/assign_train') // get /api/routes/assign_train
+  .post(
+    catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      // Body params
+      const routeId = req.body['routeId'];
+      const trainId = req.body['trainId'];
+
+      const routeModel = new RouteService();
+      const route = await routeModel.findById(routeId);
+
+      let newRoute = await routeModel.assignTrain(route, trainId);
+
+      res.json(newRoute);
+    }),
+  );
+
 export default routeHandler;
