@@ -41,6 +41,7 @@ export class Wagon {
   @Index()
   @ManyToOne((type) => Train, (train) => train.wagons, {
     nullable: true,
+    eager: true,
     onDelete: 'CASCADE',
   })
   currentTrain?: Train;

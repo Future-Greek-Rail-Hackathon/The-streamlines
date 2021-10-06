@@ -18,14 +18,14 @@ export class Package {
 
   @Index()
   @ManyToOne((type) => Order, (order) => order.packages, {
-    nullable: false,
+    nullable: true,
     onDelete: 'CASCADE',
   })
   order?: Order;
 
   @Index()
   @Column({ enum: PackageType, nullable: true })
-  type: PackageType;
+  type?: PackageType;
 
   @Column('numeric', { precision: 2, nullable: true })
   volume: number;
