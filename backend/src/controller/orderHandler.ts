@@ -1,0 +1,65 @@
+import { NextFunction, Request, Response, Router } from 'express';
+import moment from 'moment';
+import { OrderState } from '../entity/Order';
+import { Package } from '../entity/Package';
+import catchErrors from '../lib/catchErrors';
+import { OrderService } from '../services/order';
+import { PackageService } from '../services/package';
+import { UserService } from '../services/user';
+moment.tz.setDefault('Europe/Athens');
+
+const orderHandler: Router = Router();
+
+orderHandler
+  .route('/') // post /api/orders
+  .post(
+    catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      const userId = req.body['userId'];
+      const packages = req.body['packages'];
+      const trainId = req.body['trainId'];
+      const pickupDate = moment(req.body['requestedPickupDate']).toDate();
+
+      const packageModel = new PackageService();
+      let pckgs: Package[] = [];
+      // Create Order
+      const orderModel = new OrderService();
+      let newOrder = orderModel.orderRepository.create();
+
+      // Create packages
+      for (let index = 0; index < packages.length; index++) {
+        const pckg = packages[index];
+        let newPckg = new Package();
+        // let newPckg = packageModel.packageRepository.create();
+        newPckg.type = null;
+        newPckg.volume = parseFloat(pckg.volume);
+        newPckg.price = parseFloat(pckg.price);
+        newPckg.weight = parseFloat(pckg.weight);
+        newPckg.order = newOrder;
+        newPckg = await packageModel.createPackage(newPckg);
+        pckgs.push(newPckg);
+      }
+
+      newOrder = await orderModel.createOrder(userId, packages, trainId, pickupDate);
+
+      // Assign to Train? Route?
+      res.json(newOrder);
+    }),
+  );
+
+orderHandler
+  .route('/deliver') // post /api/orders/deliver
+  .post(
+    catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      const orderId = req.body['orderId'];
+
+      // Create Order
+      const orderModel = new OrderService();
+      let order = await orderModel.findById(orderId);
+
+      order = await orderModel.updateOrderStatus(order, OrderState.FINISHED);
+
+      res.json(order);
+    }),
+  );
+
+export default orderHandler;
