@@ -20,7 +20,13 @@ export class WagonService {
       where: {
         id: wagonId,
       },
-      relations: ['trains'],
+      loadRelationIds: true,
+    });
+  }
+
+  findAll() {
+    return this.wagonRepository.findOne({
+      loadRelationIds: true,
     });
   }
 }
