@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { WagonType } from '../entity/Wagon';
 import catchErrors from '../lib/catchErrors';
+import { TrainService } from '../services/train';
 import { WagonService } from '../services/wagons';
 
 const wagonHandler: Router = Router();
@@ -27,6 +28,16 @@ wagonHandler
       newWagon.minWeightPerPackage = parseFloat(minWeightPerPackage);
       await wagonModel.createWagon(newWagon);
       res.json(newWagon);
+    }),
+  );
+wagonHandler
+  .route('/') // get /api/wagons/
+  .get(
+    catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      const wagonModel = new WagonService();
+      const wagons = await wagonModel.findAll();
+
+      res.json(wagons);
     }),
   );
 
