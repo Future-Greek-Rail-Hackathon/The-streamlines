@@ -3,6 +3,7 @@ import { getRepository, Repository } from 'typeorm';
 import { Route } from '../entity/Routes';
 import { Train, TrainType } from '../entity/Trains';
 import { TrainStop } from '../entity/TrainStop';
+import { TrainService } from './train';
 import { TrainStopService } from './trainStop';
 moment.tz.setDefault('Europe/Athens');
 
@@ -15,7 +16,7 @@ export class RouteService {
 
   async findAll(): Promise<Route[]> {
     return await this.routeRepository.find({
-      relations: ['train_stops'],
+      loadRelationIds: true,
     });
   }
 
@@ -43,7 +44,15 @@ export class RouteService {
       where: {
         id: routeId,
       },
-      relations: ['trains_tops'],
+      loadRelationIds: true,
     });
+  }
+
+  async assignTrain(route: Route, trainId: number): Promise<Route> {
+    const trainModel = new TrainService();
+    const train = await trainModel.findById(trainId);
+    route.currentTrain = train;
+    let newRoute = await this.routeRepository.save(route);
+    return newRoute;
   }
 }
