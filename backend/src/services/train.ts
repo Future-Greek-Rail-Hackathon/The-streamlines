@@ -1,6 +1,8 @@
 import moment from 'moment-timezone';
 import { getRepository, Repository } from 'typeorm';
 import { Train, TrainType } from '../entity/Trains';
+import { Wagon } from '../entity/Wagon';
+import { WagonService } from './wagons';
 moment.tz.setDefault('Europe/Athens');
 
 export class TrainService {
@@ -14,7 +16,7 @@ export class TrainService {
     let newTrain = this.trainRepository.create();
     newTrain.type = type;
     newTrain.canGoAboard = canGoAboard;
-    newTrain.maxWeight = type === TrainType.FULL_TRAIN ? 750 : 0;
+    newTrain.maxWeight = type === TrainType.FULL_TRAIN ? parseInt('750') : parseInt('0');
 
     return await this.trainRepository.save(newTrain);
   }
@@ -25,10 +27,23 @@ export class TrainService {
         id: trainId,
       },
       relations: ['wagons'],
+      loadRelationIds: true,
     });
   }
 
   async findAll(): Promise<Train[]> {
-    return await this.trainRepository.find({ relations: ['wagons'] });
+    return await this.trainRepository.find({ relations: ['wagons'], loadRelationIds: true });
+  }
+
+  async addWagon(train: Train, wagon: Wagon): Promise<Train> {
+    train.wagons.push(wagon);
+    if (train.type === TrainType.NON_FULL_TRAIN) {
+      let trainWeight = parseInt(train.maxWeight.toString());
+      train.maxWeight = trainWeight + parseInt(wagon.maxWeight.toString());
+    }
+
+    const wagonModel = new WagonService();
+    await wagonModel.wagonRepository.save(wagon);
+    return train;
   }
 }
