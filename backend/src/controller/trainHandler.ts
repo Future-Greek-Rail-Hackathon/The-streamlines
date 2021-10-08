@@ -95,4 +95,23 @@ trainHandler
     }),
   );
 
+trainHandler
+  .route('/start') // get /api/trains/start
+  .post(
+    catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      const trainId = req.body['trainId'];
+
+      const trainModel = new TrainService();
+      const train = await trainModel.findById(trainId);
+
+      // Get current route orders
+      let orders = await trainModel.getCurrentRoutesOrder(train);
+      // Make all order of this route arrived
+      const routeModel = new RouteService();
+      const response = await routeModel.startRoute(orders);
+
+      res.json(response);
+    }),
+  );
+
 export default trainHandler;

@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { Package } from './Package';
 import { Route } from './Routes';
-import { Train } from './Trains';
 
 import { User } from './User';
 
@@ -20,6 +19,7 @@ export enum OrderState {
   IN_TRANSIT = 'in_transit',
   ARRIVED = 'arrived',
   FINISHED = 'finished',
+  SCANNED = 'scanned',
 }
 
 @Entity({ name: 'orders' })

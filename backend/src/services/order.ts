@@ -2,8 +2,8 @@ import moment from 'moment-timezone';
 import { getRepository, Repository } from 'typeorm';
 import { Order, OrderState } from '../entity/Order';
 import { Package } from '../entity/Package';
+import { TrainStop } from '../entity/TrainStop';
 import { RouteService } from './route';
-import { TrainService } from './train';
 import { UserService } from './user';
 moment.tz.setDefault('Europe/Athens');
 
@@ -44,7 +44,7 @@ export class OrderService {
   }
 
   findById(orderId: number) {
-    return this.orderRepository.findOne({ id: orderId });
+    return this.orderRepository.findOne({ where: { id: orderId }, loadRelationIds: true });
   }
 
   async updateOrderStatus(order: Order, status: OrderState) {
@@ -58,7 +58,38 @@ export class OrderService {
       order.state = status;
       await this.orderRepository.save(order);
     }
-
     return orders;
+  }
+
+  async scanOrder(order: Order, station: TrainStop) {
+    let response = '';
+    if (order.route.startLocation === station) {
+      // Scanned at start location
+      if (order.state === OrderState.ACCEPTED) {
+        order.state = OrderState.SCANNED;
+        response = 'ok';
+      } else if (order.state === OrderState.NEW_ORDER) {
+        response = 'order is not accepted yet';
+      } else if (order.state === OrderState.IN_TRANSIT) {
+        response = 'already scanned, should be on the way';
+      } else {
+        response = 'bad state';
+      }
+    } else if (order.route.endLocation === station) {
+      // Scanned at end location
+      if (order.state === OrderState.IN_TRANSIT) {
+        order.state = OrderState.ARRIVED;
+        response = 'ok';
+      } else if (order.state === OrderState.ARRIVED) {
+        response = 'already scanned, the client should be here';
+      } else {
+        response = 'bad state';
+      }
+    } else {
+      // Do nothing
+      response = 'Where did you scan it from? Check location';
+    }
+
+    return response;
   }
 }
