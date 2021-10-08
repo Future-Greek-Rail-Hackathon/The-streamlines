@@ -2,7 +2,8 @@ import moment from 'moment-timezone';
 import { getRepository, Repository } from 'typeorm';
 import { Order, OrderState } from '../entity/Order';
 import { Route } from '../entity/Routes';
-import { TrainType } from '../entity/Trains';
+import { Train, TrainType } from '../entity/Trains';
+import { TrainStop } from '../entity/TrainStop';
 import { OrderService } from './order';
 import { TrainService } from './train';
 import { TrainStopService } from './trainStop';
@@ -21,11 +22,41 @@ export class RouteService {
     });
   }
 
+  async getRecurring(): Promise<Route[]> {
+    return await this.routeRepository.find({
+      where: {
+        recurring: true,
+        active: true,
+      },
+      loadRelationIds: true,
+    });
+  }
+
+  async recurRoutes(routes: Route[]): Promise<Route[]> {
+    const routeModel = new RouteService();
+    let route: Route;
+    let startLocation, endLocation: any;
+    let startTime, estimatedTime: Date;
+    for (let i = 0; i < routes.length; i++) {
+      // Get routes values
+      route = routes[i];
+      startLocation = route.startLocation;
+      endLocation = route.endLocation;
+      startTime = moment(route.startTime).add(1, 'day').toDate();
+      estimatedTime = moment(route.estimatedTime).add(1, 'day').toDate();
+      route.active = false;
+      await routeModel.routeRepository.save(route);
+      await routeModel.createRoute(startLocation, endLocation, estimatedTime, startTime, true);
+    }
+    return routes;
+  }
+
   async createRoute(
-    startLocationId: number,
-    endLocationId: number,
+    startLocationId: any,
+    endLocationId: any,
     estimatedTime: Date,
     startTime: Date,
+    recurring: boolean = false,
   ): Promise<Route> {
     const trainStopModel = new TrainStopService();
     const start = await trainStopModel.findById(startLocationId);
@@ -37,6 +68,8 @@ export class RouteService {
     newRoute.estimatedTime = moment(estimatedTime).toDate();
     newRoute.startTime = moment(startTime).toDate();
     newRoute.endTime = moment(startTime).add(moment(estimatedTime).hours(), 'hour').toDate();
+    newRoute.recurring = recurring;
+    newRoute.active = recurring ? true : false;
     return await this.routeRepository.save(newRoute);
   }
 

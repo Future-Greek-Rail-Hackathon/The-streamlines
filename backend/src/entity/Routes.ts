@@ -2,11 +2,8 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Index,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
-  ManyToMany,
   OneToMany,
   ManyToOne,
 } from 'typeorm';
@@ -38,7 +35,7 @@ export class Route {
   currentTrain: Train;
 
   @OneToMany((type) => Order, (order) => order.route, {
-    nullable: false,
+    nullable: true,
     onDelete: 'CASCADE',
   })
   currentOrders?: Order[];
