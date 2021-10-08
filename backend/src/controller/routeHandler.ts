@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import moment from 'moment';
+import { TrainType } from '../entity/Trains';
 import catchErrors from '../lib/catchErrors';
 import { RouteService } from '../services/route';
 moment.tz.setDefault('Europe/Athens');
@@ -51,6 +52,22 @@ routeHandler
       let newRoute = await routeModel.assignTrain(route, trainId);
 
       res.json(newRoute);
+    }),
+  );
+
+routeHandler
+  .route('/available') // get /api/routes/available
+  .post(
+    catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      // Body params
+      const totalWeight = req.body['totalWeight'];
+      const trainType =
+        req.body['traintype'] === 'full_train' ? TrainType.FULL_TRAIN : TrainType.NON_FULL_TRAIN;
+
+      const routeModel = new RouteService();
+      const routes = await routeModel.findAvailable(parseInt(totalWeight), trainType);
+
+      res.json(routes);
     }),
   );
 

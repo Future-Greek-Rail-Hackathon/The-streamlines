@@ -2,6 +2,7 @@ import moment from 'moment-timezone';
 import { getRepository, Repository } from 'typeorm';
 import { Order, OrderState } from '../entity/Order';
 import { Route } from '../entity/Routes';
+import { TrainType } from '../entity/Trains';
 import { OrderService } from './order';
 import { TrainService } from './train';
 import { TrainStopService } from './trainStop';
@@ -74,7 +75,27 @@ export class RouteService {
       }
     }
     response = response === '' ? 'ok' : response;
-
     return response;
+  }
+
+  getTotalWeight(route: Route) {
+    let totalWeight = 0;
+    route.currentOrders.forEach((o) => o.packages.forEach((p) => (totalWeight += p.weight)));
+    return totalWeight;
+  }
+
+  async findAvailable(totalWeight: number, trainType: TrainType) {
+    let routesQuery = this.routeRepository
+      .createQueryBuilder('route')
+      .select('routes.*')
+      .leftJoinAndSelect('routes.id', 'orders', 'routes.id = orders.routeId')
+      .leftJoinAndSelect('orders.id', 'packages', 'packages.orderId = orders.id')
+      .leftJoinAndSelect('routes.currentTrainId', 'trains', 'routes.currentTrainId = trains.id')
+      .where('trains.type = :type', { type: trainType })
+      .andWhere('routes.startTime > :date', { date: moment().toDate() });
+    let routes = await routesQuery.getRawMany();
+    routes = routes.map(
+      (r: Route) => this.getTotalWeight(r) + totalWeight <= r.currentTrain.maxWeight,
+    );
   }
 }

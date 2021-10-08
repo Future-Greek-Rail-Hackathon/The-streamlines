@@ -37,7 +37,7 @@ trainHandler
   );
 
 trainHandler
-  .route('/') // get /api/trains/
+  .route('/') // get /api/trains/available
   .get(
     catchErrors(async (req: Request, res: Response, next: NextFunction) => {
       const trainModel = new TrainService();

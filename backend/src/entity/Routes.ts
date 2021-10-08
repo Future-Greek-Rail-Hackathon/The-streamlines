@@ -49,6 +49,9 @@ export class Route {
   @Column({ default: false, nullable: true })
   active: boolean;
 
+  @Column({ default: false, nullable: true })
+  recurring: boolean;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
 
