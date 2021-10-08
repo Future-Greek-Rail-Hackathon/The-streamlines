@@ -52,16 +52,10 @@ export class Train {
   })
   wagons: Wagon[];
 
-  @OneToOne((type) => Route, (route) => route.currentTrain, {
+  @OneToMany((type) => Route, (route) => route.currentTrain, {
     eager: false,
   })
   currenRoute: Route;
-
-  @OneToMany((type) => Order, (order) => order.assignedToTrain, {
-    nullable: false,
-    onDelete: 'CASCADE',
-  })
-  currentOrders?: Order[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

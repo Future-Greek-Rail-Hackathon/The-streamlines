@@ -10,6 +10,7 @@ import {
   OneToMany,
   ManyToOne,
 } from 'typeorm';
+import { Order } from './Order';
 import { Train } from './Trains';
 import { TrainStop } from './TrainStop';
 
@@ -33,8 +34,17 @@ export class Route {
   @Column({ nullable: true, type: 'timestamp' })
   endTime: Date;
 
-  @OneToOne((type) => Train, (train) => train.currenRoute, {})
+  @ManyToOne((type) => Train, (train) => train.currenRoute, {})
   currentTrain: Train;
+
+  @OneToMany((type) => Order, (order) => order.route, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  currentOrders?: Order[];
+
+  @Column({ nullable: true })
+  trainId: number;
 
   @Column({ default: false, nullable: true })
   active: boolean;

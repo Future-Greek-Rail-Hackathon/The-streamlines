@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response, Router } from 'express';
+import { OrderState } from '../entity/Order';
 import { TrainType } from '../entity/Trains';
 import catchErrors from '../lib/catchErrors';
+import { OrderService } from '../services/order';
+import { RouteService } from '../services/route';
 import { TrainService } from '../services/train';
 import { WagonService } from '../services/wagons';
 const trainHandler: Router = Router();
@@ -69,12 +72,26 @@ trainHandler
   );
 
 trainHandler
-  .route('/') // get /api/trains/
-  .get(
+  .route('/arrive') // get /api/trains/arrive
+  .post(
     catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      const trainId = req.body['trainId'];
+
       const trainModel = new TrainService();
-      const trains = await trainModel.findAll();
-      res.json(trains);
+      const train = await trainModel.findById(trainId);
+
+      // Get current route orders
+      let orders = await trainModel.getCurrentRoutesOrder(train);
+      // Make all order of this route arrived
+      const orderModel = new OrderService();
+      orders = await orderModel.updateOrdersStatus(orders, OrderState.ARRIVED);
+
+      //Make routes currentid null
+      let routeModel = new RouteService();
+      const route = await routeModel.findById(trainId);
+      await routeModel.clearTrain(route);
+
+      res.json(train);
     }),
   );
 

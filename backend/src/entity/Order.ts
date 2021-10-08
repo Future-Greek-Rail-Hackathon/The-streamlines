@@ -9,6 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Package } from './Package';
+import { Route } from './Routes';
 import { Train } from './Trains';
 
 import { User } from './User';
@@ -62,11 +63,11 @@ export class Order {
   eta?: Date;
 
   @Index()
-  @ManyToOne((type) => Train, (train) => train.currentOrders, {
+  @ManyToOne((type) => Route, (route) => route.currentOrders, {
     nullable: false,
     onDelete: 'CASCADE',
   })
-  assignedToTrain?: Train;
+  route?: Route;
 
   @Column('numeric', { precision: 2, nullable: true })
   totalPrice: number;

@@ -2,6 +2,7 @@ import moment from 'moment-timezone';
 import { getRepository, Repository } from 'typeorm';
 import { Order, OrderState } from '../entity/Order';
 import { Package } from '../entity/Package';
+import { RouteService } from './route';
 import { TrainService } from './train';
 import { UserService } from './user';
 moment.tz.setDefault('Europe/Athens');
@@ -16,22 +17,20 @@ export class OrderService {
   async createOrder(
     userId: number,
     packages: Package[],
-    trainId: number,
+    routeId: number,
     pickupDate: Date,
   ): Promise<Order> {
     const userModel = new UserService();
     const user = await userModel.findById(userId);
 
-    const trainModel = new TrainService();
-    const assignedTrain = await trainModel.findById(trainId);
+    const routeModel = new RouteService();
+    const route = await routeModel.findById(routeId);
 
     let newOrder = this.orderRepository.create();
     newOrder.user = user;
-    newOrder.assignedToTrain = assignedTrain;
+    newOrder.route = route;
     newOrder.requestedPickupDate = pickupDate;
-    if (assignedTrain.currenRoute) {
-      newOrder.eta = assignedTrain.currenRoute.endTime;
-    }
+    newOrder.eta = route.endTime ? route.endTime : null;
     newOrder.state = OrderState.NEW_ORDER;
     newOrder.packages = packages;
 
@@ -52,5 +51,14 @@ export class OrderService {
     order.state = status;
     order = await this.orderRepository.save(order);
     return order;
+  }
+  async updateOrdersStatus(orders: Order[], status: OrderState) {
+    for (let i = 0; i < orders.length; i++) {
+      const order = orders[i];
+      order.state = status;
+      await this.orderRepository.save(order);
+    }
+
+    return orders;
   }
 }

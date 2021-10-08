@@ -5,7 +5,6 @@ import { Package } from '../entity/Package';
 import catchErrors from '../lib/catchErrors';
 import { OrderService } from '../services/order';
 import { PackageService } from '../services/package';
-import { UserService } from '../services/user';
 moment.tz.setDefault('Europe/Athens');
 
 const orderHandler: Router = Router();
@@ -16,7 +15,7 @@ orderHandler
     catchErrors(async (req: Request, res: Response, next: NextFunction) => {
       const userId = req.body['userId'];
       const packages = req.body['packages'];
-      const trainId = req.body['trainId'];
+      const routeId = req.body['routeId'];
       const pickupDate = moment(req.body['requestedPickupDate']).toDate();
 
       const packageModel = new PackageService();
@@ -29,7 +28,6 @@ orderHandler
       for (let index = 0; index < packages.length; index++) {
         const pckg = packages[index];
         let newPckg = new Package();
-        // let newPckg = packageModel.packageRepository.create();
         newPckg.type = null;
         newPckg.volume = parseFloat(pckg.volume);
         newPckg.price = parseFloat(pckg.price);
@@ -39,9 +37,8 @@ orderHandler
         pckgs.push(newPckg);
       }
 
-      newOrder = await orderModel.createOrder(userId, packages, trainId, pickupDate);
+      newOrder = await orderModel.createOrder(userId, packages, routeId, pickupDate);
 
-      // Assign to Train? Route?
       res.json(newOrder);
     }),
   );

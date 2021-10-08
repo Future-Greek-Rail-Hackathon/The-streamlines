@@ -1,5 +1,6 @@
 import moment from 'moment-timezone';
 import { getRepository, Repository } from 'typeorm';
+import { Order } from '../entity/Order';
 import { Train, TrainType } from '../entity/Trains';
 import { Wagon } from '../entity/Wagon';
 import { WagonService } from './wagons';
@@ -29,6 +30,16 @@ export class TrainService {
       relations: ['wagons'],
       loadRelationIds: true,
     });
+  }
+
+  async getCurrentRoutesOrder(train: Train): Promise<Order[]> {
+    let ordersQuery = this.trainRepository
+      .createQueryBuilder('train')
+      .select('orders.*')
+      .leftJoinAndSelect('trains.id', 'routes', 'trains.id = routes.currentTrainID')
+      .leftJoinAndSelect('routes.id', 'orders', 'routes.id = orders.routeId')
+      .where('routes.id = :id', { id: train.id });
+    return ordersQuery.getRawMany();
   }
 
   async findAll(): Promise<Train[]> {

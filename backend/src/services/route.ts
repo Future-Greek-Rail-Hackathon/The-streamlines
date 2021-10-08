@@ -52,7 +52,14 @@ export class RouteService {
     const trainModel = new TrainService();
     const train = await trainModel.findById(trainId);
     route.currentTrain = train;
+    // Transfer to start of route
+    route.trainId = train.id;
     let newRoute = await this.routeRepository.save(route);
     return newRoute;
+  }
+
+  clearTrain(route: Route) {
+    route.currentTrain = null;
+    return this.routeRepository.save(route);
   }
 }
