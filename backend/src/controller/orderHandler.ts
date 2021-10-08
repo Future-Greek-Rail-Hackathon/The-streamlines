@@ -44,7 +44,7 @@ orderHandler
   );
 
 orderHandler
-  .route('/deliver') // post /api/orders/deliver
+  .route('/complete') // post /api/orders/complete
   .post(
     catchErrors(async (req: Request, res: Response, next: NextFunction) => {
       const orderId = req.body['orderId'];
