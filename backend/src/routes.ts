@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import orderHandler from './controller/orderHandler';
 import routeHandler from './controller/routeHandler';
+import stationRouter from './controller/station';
 import trainHandler from './controller/trainHandler';
 import trainStopHandler from './controller/trainStopHandler';
 import userHandler from './controller/userHandler';
@@ -13,5 +14,6 @@ router.use('/train_stops', trainStopHandler);
 router.use('/routes', routeHandler);
 router.use('/wagons', wagonHandler);
 router.use('/orders', orderHandler);
+router.use('/station', stationRouter);
 
 export default router;

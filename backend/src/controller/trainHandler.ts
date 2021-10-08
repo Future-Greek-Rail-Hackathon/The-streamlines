@@ -47,6 +47,16 @@ trainHandler
   );
 
 trainHandler
+  .route('/available') // get /api/trains/available
+  .get(
+    catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      const trainModel = new TrainService();
+      const trains = await trainModel.findAvailable();
+      res.json(trains);
+    }),
+  );
+
+trainHandler
   .route('/assign_wagon') // post /api/trains/assign_wagon
   .post(
     catchErrors(async (req: Request, res: Response, next: NextFunction) => {

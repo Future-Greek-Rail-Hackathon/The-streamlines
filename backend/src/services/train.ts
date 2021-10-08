@@ -57,4 +57,12 @@ export class TrainService {
     await wagonModel.wagonRepository.save(wagon);
     return train;
   }
+
+  async findAvailable(): Promise<Train[]> {
+    return await this.trainRepository.find({
+      where: { currenRoute: null },
+      relations: ['wagons'],
+      loadRelationIds: true,
+    });
+  }
 }
