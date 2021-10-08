@@ -1,8 +1,8 @@
 import moment from 'moment-timezone';
 import { getRepository, Repository } from 'typeorm';
+import { Order, OrderState } from '../entity/Order';
 import { Route } from '../entity/Routes';
-import { Train, TrainType } from '../entity/Trains';
-import { TrainStop } from '../entity/TrainStop';
+import { OrderService } from './order';
 import { TrainService } from './train';
 import { TrainStopService } from './trainStop';
 moment.tz.setDefault('Europe/Athens');
@@ -61,5 +61,20 @@ export class RouteService {
   clearTrain(route: Route) {
     route.currentTrain = null;
     return this.routeRepository.save(route);
+  }
+
+  async startRoute(orders: Order[]) {
+    let response = '';
+    const orderModel = new OrderService();
+    for (let i = 0; i < orders.length; i++) {
+      if (orders[i].state === OrderState.SCANNED) {
+        orderModel.updateOrderStatus(orders[i], OrderState.IN_TRANSIT);
+      } else {
+        response = response + `Order with id ${orders[i].id} is in bad State. \n`;
+      }
+    }
+    response = response === '' ? 'ok' : response;
+
+    return response;
   }
 }
