@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Package } from './Package';
 import { Route } from './Routes';
+import { TrackRecord } from './trackRecord';
 
 import { User } from './User';
 
@@ -39,6 +40,13 @@ export class Order {
     cascade: true,
   })
   packages: Package[];
+
+  @OneToMany((type) => TrackRecord, (record) => record.order, {
+    eager: true,
+    cascade: true,
+    nullable: true,
+  })
+  records: TrackRecord[];
 
   @Index()
   @Column({ enum: OrderState, nullable: true })
