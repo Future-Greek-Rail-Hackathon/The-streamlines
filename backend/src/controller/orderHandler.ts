@@ -2,9 +2,11 @@ import { NextFunction, Request, Response, Router } from 'express';
 import moment from 'moment';
 import { OrderState } from '../entity/Order';
 import { Package } from '../entity/Package';
+import { TrackRecordType } from '../entity/TrackRecord';
 import catchErrors from '../lib/catchErrors';
 import { OrderService } from '../services/order';
 import { PackageService } from '../services/package';
+import { TrackRecordService } from '../services/trackRecord';
 moment.tz.setDefault('Europe/Athens');
 
 const orderHandler: Router = Router();
@@ -54,6 +56,10 @@ orderHandler
       let order = await orderModel.findById(orderId);
 
       order = await orderModel.updateOrderStatus(order, OrderState.FINISHED);
+
+      //Create track
+      const trackRecordModel = new TrackRecordService();
+      await trackRecordModel.createTrackRecord(TrackRecordType.DELIVERED, order);
 
       res.json(order);
     }),
