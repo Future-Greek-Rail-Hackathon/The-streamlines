@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Package } from './Package';
 import { Route } from './Routes';
-import { TrackRecord } from './trackRecord';
+import { TrackRecord } from './TrackRecord';
 
 import { User } from './User';
 
@@ -72,7 +72,7 @@ export class Order {
 
   @Index()
   @ManyToOne((type) => Route, (route) => route.currentOrders, {
-    nullable: false,
+    nullable: true,
     onDelete: 'CASCADE',
   })
   route?: Route;
