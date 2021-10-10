@@ -2,8 +2,10 @@ import moment from 'moment-timezone';
 import { getRepository, Repository } from 'typeorm';
 import { Order, OrderState } from '../entity/Order';
 import { Package } from '../entity/Package';
+import { TrackRecordType } from '../entity/TrackRecord';
 import { TrainStop } from '../entity/TrainStop';
 import { RouteService } from './route';
+import { TrackRecordService } from './trackRecord';
 import { UserService } from './user';
 moment.tz.setDefault('Europe/Athens');
 
@@ -62,11 +64,13 @@ export class OrderService {
   }
 
   async scanOrder(order: Order, station: TrainStop) {
+    const trackModel = new TrackRecordService();
     let response = '';
     if (order.route.startLocation === station) {
       // Scanned at start location
       if (order.state === OrderState.ACCEPTED) {
         order.state = OrderState.SCANNED;
+        await trackModel.createTrackRecord(TrackRecordType.SCANNED_AT_START, order);
         response = 'ok';
       } else if (order.state === OrderState.NEW_ORDER) {
         response = 'order is not accepted yet';
@@ -79,6 +83,7 @@ export class OrderService {
       // Scanned at end location
       if (order.state === OrderState.IN_TRANSIT) {
         order.state = OrderState.ARRIVED;
+        await trackModel.createTrackRecord(TrackRecordType.SCANNED_AT_END, order);
         response = 'ok';
       } else if (order.state === OrderState.ARRIVED) {
         response = 'already scanned, the client should be here';
