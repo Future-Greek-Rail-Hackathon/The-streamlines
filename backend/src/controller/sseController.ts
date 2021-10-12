@@ -25,6 +25,7 @@ export type SSE = {
   orderId?: number;
   userId?: number;
   routeId?: number;
+  message?: string;
 };
 
 export let clients: SSEClient[] = [];

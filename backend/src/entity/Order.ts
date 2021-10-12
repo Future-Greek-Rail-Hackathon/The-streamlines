@@ -21,6 +21,7 @@ export enum OrderState {
   ARRIVED = 'arrived',
   FINISHED = 'finished',
   SCANNED = 'scanned',
+  CANCELLED = 'cancelled',
 }
 
 @Entity({ name: 'orders' })
@@ -79,6 +80,9 @@ export class Order {
 
   @Column('numeric', { precision: 2, nullable: true })
   totalPrice: number;
+
+  @Column({ default: false, nullable: true })
+  cancelled: boolean;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
