@@ -43,6 +43,12 @@ export class Route {
   @Column({ nullable: true })
   trainId: number;
 
+  @Column({ nullable: true })
+  totalCapacity: number;
+
+  @Column({ nullable: true })
+  availableCapacity: number;
+
   @Column({ default: false, nullable: true })
   active: boolean;
 

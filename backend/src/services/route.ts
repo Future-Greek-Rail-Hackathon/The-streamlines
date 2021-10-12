@@ -88,6 +88,10 @@ export class RouteService {
     route.currentTrain = train;
     // Transfer to start of route
     route.trainId = train.id;
+    let totalCapacity = 0;
+    train.wagons.forEach((w) => (totalCapacity = totalCapacity + w.maxWeight));
+    route.totalCapacity = totalCapacity;
+    route.availableCapacity = totalCapacity;
     let newRoute = await this.routeRepository.save(route);
     return newRoute;
   }
@@ -121,10 +125,9 @@ export class RouteService {
     let routesQuery = this.routeRepository
       .createQueryBuilder('route')
       .select('routes.*')
-      .leftJoinAndSelect('routes.id', 'orders', 'routes.id = orders.routeId')
-      .leftJoinAndSelect('orders.id', 'packages', 'packages.orderId = orders.id')
       .leftJoinAndSelect('routes.currentTrainId', 'trains', 'routes.currentTrainId = trains.id')
       .where('trains.type = :type', { type: trainType })
+      .andWhere('routes.availableCapacity > :total', { total: totalWeight })
       .andWhere('routes.startTime > :date', { date: moment().toDate() });
     let routes = await routesQuery.getRawMany();
     routes = routes.map(
