@@ -1,9 +1,11 @@
 import moment from 'moment-timezone';
 import { getRepository, Repository } from 'typeorm';
+import { EventType, SSE } from '../controller/sseController';
 import { Order, OrderState } from '../entity/Order';
 import { Package } from '../entity/Package';
 import { TrackRecordType } from '../entity/TrackRecord';
 import { TrainStop } from '../entity/TrainStop';
+import { sendEventsToAll } from '../lib/sse';
 import { RouteService } from './route';
 import { TrackRecordService } from './trackRecord';
 import { UserService } from './user';
@@ -37,10 +39,21 @@ export class OrderService {
     newOrder.packages = packages;
 
     let totalPrice = 0;
+    let totalWeight = 0;
     for (let i = 0, l = packages.length; i < l; i++) {
       totalPrice = totalPrice + packages[i].price;
+      totalWeight = totalWeight + packages[i].weight;
     }
     newOrder.totalPrice = totalPrice;
+    route.availableCapacity = route.availableCapacity - totalWeight;
+    await routeModel.routeRepository.save(route);
+    if (route.availableCapacity < 40) {
+      let SSEvent: SSE = {
+        eventType: EventType.TRAIN_IS_FULL,
+        routeId: route.id,
+      };
+      sendEventsToAll(SSEvent);
+    }
 
     return await this.orderRepository.save(newOrder);
   }
