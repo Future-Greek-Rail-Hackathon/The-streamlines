@@ -46,6 +46,19 @@ orderHandler
   );
 
 orderHandler
+  .route('/cancel') // post /api/orders/canel
+  .post(
+    catchErrors(async (req: Request, res: Response, next: NextFunction) => {
+      const orderId = req.body['orderId'];
+
+      // Cancel Order
+      const orderModel = new OrderService();
+      await orderModel.cancelOrder(orderId);
+      res.json('ok');
+    }),
+  );
+
+orderHandler
   .route('/complete') // post /api/orders/complete
   .post(
     catchErrors(async (req: Request, res: Response, next: NextFunction) => {
