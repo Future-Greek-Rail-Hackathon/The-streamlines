@@ -47,8 +47,7 @@ export class Train {
   isFull: boolean;
 
   @OneToMany((type) => Wagon, (wagon) => wagon.currentTrain, {
-    eager: false,
-    cascade: true,
+    eager: true,
   })
   wagons: Wagon[];
 
