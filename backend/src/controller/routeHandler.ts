@@ -62,7 +62,7 @@ routeHandler
       // Body params
       const totalWeight = req.body['totalWeight'];
       const trainType =
-        req.body['traintype'] === 'full_train' ? TrainType.FULL_TRAIN : TrainType.NON_FULL_TRAIN;
+        req.body['trainType'] === 'full_train' ? TrainType.FULL_TRAIN : TrainType.NON_FULL_TRAIN;
 
       const routeModel = new RouteService();
       const routes = await routeModel.findAvailable(parseInt(totalWeight), trainType);
