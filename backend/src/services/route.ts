@@ -88,10 +88,9 @@ export class RouteService {
     route.currentTrain = train;
     // Transfer to start of route
     route.trainId = train.id;
-    let totalCapacity = 0;
-    train.wagons.forEach((w) => (totalCapacity = totalCapacity + w.maxWeight));
-    route.totalCapacity = totalCapacity;
-    route.availableCapacity = totalCapacity;
+
+    route.totalCapacity = train.maxWeight;
+    route.availableCapacity = train.maxWeight;
     let newRoute = await this.routeRepository.save(route);
     return newRoute;
   }
@@ -121,17 +120,16 @@ export class RouteService {
     return totalWeight;
   }
 
-  async findAvailable(totalWeight: number, trainType: TrainType) {
+  async findAvailable(totalWeight: number, trainType: TrainType): Promise<Route[]> {
     let routesQuery = this.routeRepository
-      .createQueryBuilder('route')
+      .createQueryBuilder('routes')
       .select('routes.*')
-      .leftJoinAndSelect('routes.currentTrainId', 'trains', 'routes.currentTrainId = trains.id')
+      .leftJoinAndSelect('routes.currentTrain', 'trains', 'routes.currentTrain = trains.id')
       .where('trains.type = :type', { type: trainType })
       .andWhere('routes.availableCapacity > :total', { total: totalWeight })
       .andWhere('routes.startTime > :date', { date: moment().toDate() });
     let routes = await routesQuery.getRawMany();
-    routes = routes.map(
-      (r: Route) => this.getTotalWeight(r) + totalWeight <= r.currentTrain.maxWeight,
-    );
+    routes = routes.filter((r: Route) => r.availableCapacity > totalWeight);
+    return routes;
   }
 }
