@@ -23,7 +23,7 @@ export class TrackRecord {
 
   @Index()
   @ManyToOne((type) => Order, (order) => order.records, {
-    nullable: false,
+    nullable: true,
     onDelete: 'CASCADE',
   })
   order?: Order;
