@@ -10,12 +10,6 @@ export class PackageService {
     this.packageRepository = getRepository(Package);
   }
 
-  async createPackage(pckg: Package): Promise<Package> {
-    let newPackage = this.packageRepository.create(pckg);
-
-    return await this.packageRepository.save(newPackage);
-  }
-
   findById(packageId: number) {
     return this.packageRepository.findOne({
       where: {
