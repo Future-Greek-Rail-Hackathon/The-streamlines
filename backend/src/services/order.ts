@@ -116,19 +116,24 @@ export class OrderService {
       where: {
         id: orderId,
       },
+      relations: ['route'],
     });
 
+    if (order.cancelled) {
+      return;
+    }
     //Cancel Order
     order.state = OrderState.CANCELLED;
     order.cancelled = true;
 
-    let totalWeight = 0;
-    order.packages.forEach((p) => (totalWeight = totalWeight + p.weight));
+    let totalWeight: number = 0;
+    order.packages.forEach((p) => (totalWeight = +totalWeight + +p.weight));
+    await this.orderRepository.save(order);
 
     // Get route and alter its space
     const routeModel = new RouteService();
     let route = order.route;
-    route.availableCapacity = route.availableCapacity + totalWeight;
+    route.availableCapacity = +route.availableCapacity + +totalWeight;
     await routeModel.routeRepository.save(route);
   }
 }
