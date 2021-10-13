@@ -3,6 +3,7 @@ import { getRepository, Repository } from 'typeorm';
 import { Order } from '../entity/Order';
 import { Train, TrainType } from '../entity/Trains';
 import { Wagon } from '../entity/Wagon';
+import { RouteService } from './route';
 import { WagonService } from './wagons';
 moment.tz.setDefault('Europe/Athens');
 
@@ -46,18 +47,33 @@ export class TrainService {
     return await this.trainRepository.find({ relations: ['wagons'], loadRelationIds: true });
   }
 
-  async addWagon(train: Train, wagon: Wagon): Promise<Train> {
-    train.wagons.push(wagon);
-    if (train.type === TrainType.NON_FULL_TRAIN) {
-      let trainWeight = parseInt(train.maxWeight.toString());
-      train.maxWeight = trainWeight + parseInt(wagon.maxWeight.toString());
-    }
+  async addWagon(trainId: number, wagonId: number): Promise<Wagon> {
+    const trainModel = new TrainService();
+    const train = await trainModel.findById(trainId);
 
     const wagonModel = new WagonService();
-    await wagonModel.wagonRepository.save(wagon);
-    return train;
+    const wagon = await wagonModel.findById(wagonId);
+
+    if (train.currenRoute) {
+      train.currenRoute.totalCapacity = train.maxWeight;
+      const routeModel = new RouteService();
+      await routeModel.routeRepository.save(train.currenRoute);
+    }
+
+    wagon.currentTrain = train;
+    let newWagon = await wagonModel.wagonRepository.save(wagon);
+
+    return newWagon;
   }
 
+  async getWagons(train: Train) {
+    const wagonModel = new WagonService();
+    return await wagonModel.wagonRepository.find({
+      where: {
+        currentTrain: train,
+      },
+    });
+  }
   async findAvailable(): Promise<Train[]> {
     return await this.trainRepository.find({
       where: { currenRoute: null },
