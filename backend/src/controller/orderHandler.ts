@@ -35,7 +35,7 @@ orderHandler
         newPckg.price = parseFloat(pckg.price);
         newPckg.weight = parseFloat(pckg.weight);
         newPckg.order = newOrder;
-        newPckg = await packageModel.createPackage(newPckg);
+        newPckg = await packageModel.packageRepository.create(newPckg);
         pckgs.push(newPckg);
       }
 
