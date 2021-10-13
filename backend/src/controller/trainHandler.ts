@@ -65,18 +65,24 @@ trainHandler
 
       const trainModel = new TrainService();
       const train = await trainModel.findById(trainId);
+      // if (train.wagons.includes(wagon)) {
+      //   res.end('already assigned');
+      // } else if (wagon.currentTrain !== null) {
+      //   res.end('already got train');
+      // }
+      let newWagon = await trainModel.addWagon(trainId, wagonId);
 
-      const wagonModel = new WagonService();
-      const wagon = await wagonModel.findById(wagonId);
-
-      if (train.wagons.includes(wagon)) {
-        res.end('already assigned');
-      } else if (wagon.currentTrain !== null) {
-        res.end('already got train');
+      if (train.type === TrainType.NON_FULL_TRAIN) {
+        let trainWeight = parseInt(train.maxWeight.toString());
+        train.maxWeight = trainWeight + parseInt(newWagon.maxWeight.toString());
       }
-
-      let newTrain = await trainModel.addWagon(train, wagon);
-      await trainModel.trainRepository.save(newTrain);
+      // Get current wagons
+      let wagons = await trainModel.getWagons(train);
+      // Add new wagon
+      wagons.push(newWagon);
+      train.wagons = wagons;
+      // Save new train
+      const newTrain = await trainModel.trainRepository.save(train);
       res.json(newTrain);
     }),
   );
